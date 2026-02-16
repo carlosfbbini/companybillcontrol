@@ -35,13 +35,23 @@ new class extends Component
     <div class="mt-8 flex flex-col md:flex-row items-center gap-4">
         <label class="flex items-center gap-2">
             <span class="text-gray-700">Filter by CNPJ:</span>
-            <input type="text" wire:model="filterCnpj" placeholder="CNPJ"
+            <input type="text" wire:model.live="filterCnpj" placeholder="CNPJ"
                 class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" />
         </label>
         <label class="flex items-center gap-2">
             <span class="text-gray-700">Filter by Date:</span>
-            <input type="date" wire:model="filterDate"
+            <input type="date" wire:model.change.live="filterDate"
                 class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" />
+        </label>
+        {{-- Add a select input with paid, not paid and select --}}
+        <label class="flex items-center gap-2">
+            <span class="text-gray-700">Filter by Paid:</span>
+            <select wire:model.live="filterByPaid"
+                class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+                <option value="">All</option>
+                <option value="1">Paid</option>
+                <option value="0">Not Paid</option>
+            </select>
         </label>
     </div>
 

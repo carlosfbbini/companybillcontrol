@@ -14,7 +14,7 @@ class BillManager extends Component{
     public $csv;
     public $filterCnpj = '';
     public $filterDate = '';
-    public $bills;
+    public $filterByPaid = '';
 
     public function importCsv()
     {
@@ -128,8 +128,13 @@ class BillManager extends Component{
         if ($this->filterDate) {
             $query->whereDate('due_date', $this->filterDate);
         }
-        $this->bills = $query->orderBy('due_date', 'asc')->orderBy('amount', 'desc')->get();
-        return view('components.⚡bill-manager');
+
+        if ($this->filterByPaid !== ''){
+            $query->where('paid', $this->filterByPaid);
+        }
+
+        $bills = $query->orderBy('due_date', 'asc')->orderBy('amount', 'desc')->get();
+        return view('components.⚡bill-manager', compact('bills'));
     }
 
 
