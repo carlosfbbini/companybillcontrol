@@ -18,9 +18,14 @@ class BillManager extends Component{
 
     public function importCsv()
     {
-        $this->validate([
-            'csv' => 'required|file|mimes:csv,ods,txt',
-        ]);
+        // Only validiate if $this->csv is null
+        if (!$this->csv) {
+            $this->validate([
+                'csv' => 'required|file|mimes:csv,ods,txt',
+            ]);
+            
+        }
+
 
         DB::beginTransaction();
 
@@ -31,15 +36,31 @@ class BillManager extends Component{
                 $path = $this->csv->getRealPath();
                 $file = fopen($path, 'r');
                 $header = fgetcsv($file);
+                $header = array_map('strtolower', $header);
 
                 while ($row = fgetcsv($file)) {
+                    if (count($header) !== count($row)) {
+                        /* count them and make them same size */
+                        $min = min(count($header), count($row));
+                        $header = array_slice($header, 0, $min);
+                        $row = array_slice($row, 0, $min);
+                    }
                     $data = array_combine($header, $row);
-                    Bill::create([
-                        'company' => $data['company'],
-                        'amount' => $data['amount'],
-                        'due_date' => $data['due_date'],
-                        'paid' => isset($data['paid']) ? (bool)$data['paid'] : false,
-                    ]);
+
+                    // dd($data);
+                    Bill::updateOrCreate(
+                        [
+                            'cnpj' => $data['cnpj'] ?? null,
+                            'invoice' => $data['fatura'] ?? $data['invoice'] ?? null,
+                            'installment' => $data['parcela'] ?? $data['installment'] ?? null,
+                            'due_date' => $data['vencimento'] ?? $data['due_date'] ?? null,
+                        ],
+                        [
+                            'company' => $data['company'] ?? 'Desconhecido',
+                            'amount' => $this->castAmount($data['valor'] ?? $data['amount'] ?? '0'),
+                            'paid' => isset($data['paid']) ? (bool)$data['paid'] : false,
+                        ]
+                    );
                 }
                 fclose($file);
             } elseif ($extension === 'ods') {
@@ -58,11 +79,6 @@ class BillManager extends Component{
                         $cells = $row->toArray();
                         if ($rowIndex === 1) {
                             $header = array_map('strtolower', $cells);
-                            // Filter $header to only include expected columns
-                            // $expectedColumns = ['cnpj', 'valor', 'vencimento', 'paid', 'pago', 'fatura', 'parcela'];
-                            // $header = array_filter($header, function ($col) use ($expectedColumns) {
-                            //     return in_array($col, $expectedColumns);
-                            // });
                             continue;
                         }
 
@@ -95,7 +111,7 @@ class BillManager extends Component{
             }
 
             DB::commit();
-            session()->flash('success', 'Bills imported successfully!');
+            $this->dispatch('success', message: 'Bills imported successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
             dd($e);
@@ -137,5 +153,56 @@ class BillManager extends Component{
         // Replace comma with dot for decimal point
         $normalized = str_replace(',', '.', $cleaned);
         return floatval($normalized);   
+    }
+
+    /**
+     * Mehtod to export bills into CSV file
+     *
+     * @return void
+     */
+    public function exportCsv(){
+        $bills = Bill::all();
+        // Save in public path inside exports folder with name bills_YYYYMMDD_HHMMSS.csv
+        $filename = public_path('exports/bills_' . date('Ymd_His') . '.csv');
+        // Create exports directory if not exists
+        if (!file_exists(public_path('exports'))) {
+            mkdir(public_path('exports'), 0755, true);
+        }
+        $handle = fopen($filename, 'w+');
+        fputcsv($handle, ['company', 'cnpj', 'amount', 'due_date', 'paid', 'paid_at', 'invoice', 'installment']);
+
+        foreach ($bills as $bill) {
+            fputcsv($handle, [
+                $bill->company,
+                $bill->cnpj,
+                $bill->amount,
+                $bill->due_date,
+                $bill->paid,
+                $bill->paid_at,
+                $bill->invoice,
+                $bill->installment
+            ]);
+        }
+
+        fclose($handle);
+        return response()->download($filename);
+    }
+
+    public function importLastExportedCsv()
+    {
+        $files = glob(public_path('exports/bills_*.csv'));
+
+        if (empty($files)) {
+            session()->flash('error', 'No exported CSV files found.');
+            return;
+        }
+
+        $latestFile = collect($files)->sortByDesc(function ($file) {
+            return filemtime($file);
+        })->first();
+
+        $this->csv = new \Illuminate\Http\UploadedFile($latestFile, basename($latestFile));
+
+        $this->importCsv();
     }
 }

@@ -11,18 +11,26 @@ new class extends Component
 <div>
     <div class="my-8">
         <form wire:submit.prevent="importCsv" class="flex flex-col md:flex-row items-center gap-4">
-            <input type="file" wire:model="csv" accept=".csv"
+            <input type="file" wire:model="csv" accept=".csv,.ods,.txt"
                 class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" />
             <button type="submit"
                 class="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300">
                 Import Bills
             </button>
+            @error('csv') <span class="text-red-500">{{ $message }}</span> @enderror
         </form>
-    </div>
+        {{-- Button to create a backup of bill data in CSV format --}}
+        <button wire:click="exportCsv"
+            class="mt-4 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
+            Export Bills
+        </button>
 
-    @if (session()->has('success'))
-        <div>{{ session('success') }}</div>
-    @endif
+        {{-- Button to import last bill exported --}}
+        <button wire:click="importLastExportedCsv"
+            class="mt-4 px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring focus:ring-yellow-300">
+            Import Last Exported Bills
+        </button>
+    </div>
 
     <div class="mt-8 flex flex-col md:flex-row items-center gap-4">
         <label class="flex items-center gap-2">

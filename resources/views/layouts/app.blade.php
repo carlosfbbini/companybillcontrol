@@ -32,8 +32,11 @@
                 </ul>
             </div>
         </nav>
-        {{ $slot }}
 
+        <x-alert-success/>
+
+        {{ $slot }}
+        
         @livewireScripts
     </body>
 </html>
