@@ -6,4 +6,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::livewire('/post/create', 'pages::post.create');
+
+Route::get('/bills', App\Http\Livewire\BillManager::class);

@@ -21,14 +21,14 @@
                         <a href="{{ url('/') }}" class="text-gray-300 hover:text-white">Home</a>
                     </li>
                     <li>
-                        <a href="{{ url('/shop') }}" class="text-gray-300 hover:text-white">Shop</a>
+                        <a href="{{ url('/bills') }}" class="text-gray-300 hover:text-white">Contas</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ url('/cart') }}" class="text-gray-300 hover:text-white">Cart</a>
                     </li>
                     <li>
                         <a href="{{ url('/contact') }}" class="text-gray-300 hover:text-white">Contact</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </nav>
