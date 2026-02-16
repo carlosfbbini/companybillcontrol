@@ -11,6 +11,27 @@
         @livewireStyles
     </head>
     <body>
+        <nav class="bg-gray-800 p-4">
+            <div class="container mx-auto flex items-center justify-between">
+                <a href="{{ url('/') }}" class="text-white text-lg font-semibold">
+                    {{ config('app.name', 'Laravel') }}
+                </a>
+                <ul class="flex space-x-4">
+                    <li>
+                        <a href="{{ url('/') }}" class="text-gray-300 hover:text-white">Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/shop') }}" class="text-gray-300 hover:text-white">Shop</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/cart') }}" class="text-gray-300 hover:text-white">Cart</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/contact') }}" class="text-gray-300 hover:text-white">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         {{ $slot }}
 
         @livewireScripts
