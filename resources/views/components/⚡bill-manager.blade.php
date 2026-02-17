@@ -30,6 +30,11 @@ new class extends Component
             class="mt-4 px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring focus:ring-yellow-300">
             Import Last Exported Bills
         </button>
+        {{-- Botões para verificar se há boletos novos --}}
+        <button onclick="confirm('Are you sure you want to check for new bills?') && @this.call('checkForNewBills')"
+            class="mt-4 px-4 py-2 rounded bg-purple-500 text-white hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300">
+            Check for New Bills
+        </button>
     </div>
 
     <div class="mt-8 flex flex-col md:flex-row items-center gap-4">

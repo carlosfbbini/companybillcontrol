@@ -238,4 +238,7 @@ class BillManager extends Component{
         $this->render();
     }
 
+    public function checkForNewBills(){
+        
+    }
 }
