@@ -16,6 +16,9 @@ class BillManager extends Component{
     public $filterDate = '';
     public $filterByPaid = '';
 
+    public $sortField = '';
+    public $sortDirection = 'asc';
+
     public function importCsv()
     {
         // Only validiate if $this->csv is null
@@ -132,9 +135,22 @@ class BillManager extends Component{
         if ($this->filterByPaid !== ''){
             $query->where('paid', $this->filterByPaid);
         }
+        if ($this->sortField) {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        } else {
+            $query->orderBy('due_date', 'asc')->orderBy('amount', 'desc');
+        }
 
-        $bills = $query->orderBy('due_date', 'asc')->orderBy('amount', 'desc')->get();
-        return view('components.⚡bill-manager', compact('bills'));
+        $bills = $query->get();
+
+        $monthBills = Bill::whereMonth('due_date', date('m'))->whereYear('due_date', date('Y'))->get();
+
+        $totalDueToday = $monthBills->where('due_date', date('Y-m-d'))->sum('amount');
+        $totalMonthlyDue = $monthBills->sum('amount');
+        $totalOverdue = $monthBills->where('due_date', '<', date('Y-m-d'))->where('paid', false)->sum('amount');
+        $totalPaid = $monthBills->where('paid', true)->sum('amount');
+
+        return view('components.⚡bill-manager', compact('bills', 'totalDueToday', 'totalMonthlyDue', 'totalOverdue', 'totalPaid'));
     }
 
 
@@ -210,4 +226,16 @@ class BillManager extends Component{
 
         $this->importCsv();
     }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->render();
+    }
+
 }

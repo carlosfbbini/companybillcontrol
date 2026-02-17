@@ -55,16 +55,75 @@ new class extends Component
         </label>
     </div>
 
+    {{-- Div contains total of day and month --}}
+    <div class="mt-8 flex flex-col md:flex-row items-center gap-4">
+        <div class="bg-gray-100 p-4 rounded shadow w-full md:w-auto">
+            <h3 class="text-lg font-semibold text-gray-700">Total Vencimento do dia</h3>
+            <p class="text-2xl font-bold {{ $totalDueToday >= 0 ? 'text-gray-500' : 'text-red-500' }}">R$ {{ number_format($totalDueToday, 2, ',', '.') }}</p>
+        </div>
+        {{-- Total Vencimento do mês --}}
+        <div class="bg-gray-100 p-4 rounded shadow w-full md:w-auto">
+            <h3 class="text-lg font-semibold text-gray-700">Total do mês</h3>
+            <p class="text-2xl font-bold text-red-500">R$ {{ number_format($totalMonthlyDue, 2, ',', '.') }}</p>
+        </div>
+        
+        <div class="bg-gray-100 p-4 rounded shadow w-full md:w-auto">
+            <h3 class="text-lg font-semibold text-gray-700">Total Vencido do mês</h3>
+            <p class="text-2xl font-bold text-red-500">R$ {{ number_format($totalOverdue, 2, ',', '.') }}</p>
+        </div>
+
+        <div class="bg-gray-100 p-4 rounded shadow w-full md:w-auto">
+            <h3 class="text-lg font-semibold text-gray-700">Total Pago</h3>
+            <p class="text-2xl font-bold text-red-500">R$ {{ number_format($totalPaid, 2, ',', '.') }}</p>
+        </div>
+
+    </div>
+
     <table class="mt-8 w-full border-collapse">
         <thead>
             <tr class="bg-gray-100">
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Company</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">CNPJ</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Fatura</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Parcela</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Valor</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Vencimento</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Pago</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('company')">
+                    Company
+                    @if($sortField === 'company')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('cnpj')">
+                    CNPJ
+                    @if($sortField === 'cnpj')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('invoice')">
+                    Fatura
+                    @if($sortField === 'invoice')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('installment')">
+                    Parcela
+                    @if($sortField === 'installment')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('amount')">
+                    Valor
+                    @if($sortField === 'amount')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('due_date')">
+                    Vencimento
+                    @if($sortField === 'due_date')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 cursor-pointer" wire:click="sortBy('paid')">
+                    Pago
+                    @if($sortField === 'paid')
+                        <span>{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    @endif
+                </th>
             </tr>
         </thead>
         <tbody>
