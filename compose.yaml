@@ -23,6 +23,14 @@ services:
             - sail
         depends_on:
             - pgsql
+    selenium:
+        image: 'selenium/standalone-chrome:latest'
+        ports:
+            - '4444:4444'
+        environment:
+            - SE_NODE_MAX_SESSIONS=5
+        networks:
+            - sail
     pgsql:
         image: 'postgres:18-alpine'
         ports:

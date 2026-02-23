@@ -239,6 +239,7 @@ class BillManager extends Component{
     }
 
     public function checkForNewBills(){
-        
+        $grupoSomaDownloader = new \App\Services\GrupoSomaDownloader();
+        $grupoSomaDownloader->downloadNewInvoices();
     }
 }
